@@ -49,7 +49,7 @@ restful_booker_API_project/
 
 1. Клонируйте репозиторий:
 ```bash
-git clone <repository-url>
+git clone git@github.com:PanovaAlyona/restful_booker_API_project.git
 cd restful_booker_API_project
 ```
 
