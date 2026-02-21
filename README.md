@@ -92,6 +92,10 @@ pytest tests/api/test_booking.py::test_create_booking
 pytest tests/ -v
 ```
 
+## Отчет в allure
+#### <img src="media/allure.png">
+
+
 ## Линтеры
 
 Проверка кода с помощью flake8:
