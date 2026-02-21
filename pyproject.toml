@@ -1,0 +1,35 @@
+[tool.black]
+line-length = 79
+target-version = ['py311']
+
+[tool.flake8]
+max-line-length = 79
+ignore = ["E203", "W503", "E501"]
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+
+[project]
+name = "restful-booker-api-project"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Alena Panova",email = "aljonchik1905@mail.ru"}
+]
+requires-python = ">=3.13"
+dependencies = [
+    "requests>=2.31.0",
+    "pytest>=8.0.0",
+    "python-dotenv>=1.0.0",
+    "jsonschema>=4.20.0",
+    "allure-pytest>=2.13.0",
+    "black>=24.0.0",
+    "flake8>=7.0.0",
+    "isort>=5.13.0",
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
