@@ -117,7 +117,6 @@ isort --profile black --multi-line 3 functions/ tests/ utils/
 
 ### Логирование
 Все HTTP запросы и ответы логируются в:
-- Консоль и файл `test_execution.log`
 - Allure отчет с прикреплением тел запросов/ответов
 
 ### Валидация схем
