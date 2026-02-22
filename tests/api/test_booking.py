@@ -24,6 +24,7 @@ from functions.api_helper import (  # noqa: E402
     get_booking_by_id,
     get_id_new_booking,
 )
+from models.booking import Booking, BookingDates  # noqa: E402
 from utils.logger import response_attaching, response_logging  # noqa: E402
 
 logger = logging.getLogger(__name__)
@@ -91,20 +92,19 @@ def test_get_booking_by_id(get_base_url):
 def test_create_booking(get_base_url):
     with allure.step("Подготовка данных для создания бронирования"):
         url = urljoin(get_base_url, "booking")
-        payload = {
-            "firstname": "Jim",
-            "lastname": "Brown",
-            "totalprice": 111,
-            "depositpaid": True,
-            "bookingdates": {
-                "checkin": "2018-01-01",
-                "checkout": "2019-01-01",
-            },
-            "additionalneeds": "Breakfast",
-        }
+        booking = Booking(
+            firstname="Jim",
+            lastname="Brown",
+            totalprice=111,
+            depositpaid=True,
+            bookingdates=BookingDates(
+                checkin="2018-01-01", checkout="2019-01-01"
+            ),
+            additionalneeds="Breakfast",
+        )
 
     with allure.step("Создание нового бронирования"):
-        response = create_booking(url, payload)
+        response = create_booking(url, booking)
 
     with allure.step("Проверка статус кода 200"):
         assert response.status_code == 200
@@ -124,7 +124,7 @@ def test_create_booking(get_base_url):
         url_booking_id = create_url_to_get_booking_by_id(url, new_booking_id)
         response = get_booking_by_id(url_booking_id)
         assert (
-            response.json() == payload
+            response.json() == booking.model_dump()
         ), "Данные в бронировании не соответствует данным при создании"
 
 
@@ -239,31 +239,29 @@ def test_get_booking_by_filter(
 def test_update_all_fields_in_booking(get_base_url):
     with allure.step("Подготовка данных для создания бронирования"):
         url = urljoin(get_base_url, "booking")
-        payload_for_create_booking = {
-            "firstname": "Jim",
-            "lastname": "Brown",
-            "totalprice": 111,
-            "depositpaid": True,
-            "bookingdates": {
-                "checkin": "2018-01-01",
-                "checkout": "2019-01-01",
-            },
-            "additionalneeds": "Breakfast",
-        }
-        payload_with_change = {
-            "firstname": "Jim-Josef",
-            "lastname": "Brown-Smith",
-            "totalprice": 222,
-            "depositpaid": False,
-            "bookingdates": {
-                "checkin": "2018-05-01",
-                "checkout": "2019-05-01",
-            },
-            "additionalneeds": "Breakfast and wc in room",
-        }
+        booking_for_create = Booking(
+            firstname="Jim",
+            lastname="Brown",
+            totalprice=111,
+            depositpaid=True,
+            bookingdates=BookingDates(
+                checkin="2018-01-01", checkout="2019-01-01"
+            ),
+            additionalneeds="Breakfast",
+        )
+        booking_with_change = Booking(
+            firstname="Jim-Josef",
+            lastname="Brown-Smith",
+            totalprice=222,
+            depositpaid=False,
+            bookingdates=BookingDates(
+                checkin="2018-05-01", checkout="2019-05-01"
+            ),
+            additionalneeds="Breakfast and wc in room",
+        )
 
     with allure.step("Создание нового бронирования"):
-        new_booking = create_booking(url, payload_for_create_booking)
+        new_booking = create_booking(url, booking_for_create)
         id_booking = get_id_new_booking(new_booking)
         allure.attach(
             str(id_booking),
@@ -277,13 +275,11 @@ def test_update_all_fields_in_booking(get_base_url):
         token = create_token_to_auth(url_auth, user_name, password)
 
     with allure.step("Обновление всех полей бронирования"):
-        change_all_fields_in_booking(
-            token, url_booking_id, payload_with_change
-        )
+        change_all_fields_in_booking(token, url_booking_id, booking_with_change)
 
     with allure.step("Проверка обновленного бронирования"):
         update_booking = get_booking_by_id(url_booking_id)
-        assert update_booking.json() == payload_with_change
+        assert update_booking.json() == booking_with_change.model_dump()
 
 
 @allure.feature("Booking API")
@@ -291,21 +287,20 @@ def test_update_all_fields_in_booking(get_base_url):
 def test_update_one_fields_in_booking(get_base_url):
     with allure.step("Подготовка данных для создания бронирования"):
         url = urljoin(get_base_url, "booking")
-        payload_for_create_booking = {
-            "firstname": "Jim",
-            "lastname": "Brown",
-            "totalprice": 111,
-            "depositpaid": True,
-            "bookingdates": {
-                "checkin": "2018-01-01",
-                "checkout": "2019-01-01",
-            },
-            "additionalneeds": "Breakfast",
-        }
+        booking_for_create = Booking(
+            firstname="Jim",
+            lastname="Brown",
+            totalprice=111,
+            depositpaid=True,
+            bookingdates=BookingDates(
+                checkin="2018-01-01", checkout="2019-01-01"
+            ),
+            additionalneeds="Breakfast",
+        )
         field_with_change = {"additionalneeds": "Nothing"}
 
     with allure.step("Создание нового бронирования"):
-        new_booking = create_booking(url, payload_for_create_booking)
+        new_booking = create_booking(url, booking_for_create)
         id_booking = get_id_new_booking(new_booking)
         allure.attach(
             str(id_booking),
@@ -334,20 +329,19 @@ def test_update_one_fields_in_booking(get_base_url):
 def test_delete_booking(get_base_url):
     with allure.step("Подготовка данных для создания бронирования"):
         url = urljoin(get_base_url, "booking")
-        payload_for_create_booking = {
-            "firstname": "Jim",
-            "lastname": "Brown",
-            "totalprice": 111,
-            "depositpaid": True,
-            "bookingdates": {
-                "checkin": "2018-01-01",
-                "checkout": "2019-01-01",
-            },
-            "additionalneeds": "Breakfast",
-        }
+        booking_for_create = Booking(
+            firstname="Jim",
+            lastname="Brown",
+            totalprice=111,
+            depositpaid=True,
+            bookingdates=BookingDates(
+                checkin="2018-01-01", checkout="2019-01-01"
+            ),
+            additionalneeds="Breakfast",
+        )
 
     with allure.step("Создание нового бронирования"):
-        new_booking = create_booking(url, payload_for_create_booking)
+        new_booking = create_booking(url, booking_for_create)
         id_booking = get_id_new_booking(new_booking)
         allure.attach(
             str(id_booking),
