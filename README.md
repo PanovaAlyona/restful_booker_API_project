@@ -22,6 +22,7 @@
 - jsonschema - валидация JSON схем
 - python-dotenv - управление переменными окружения
 - black, flake8, isort - линтеры и форматтеры кода
+- pydantic - валидация запроса/ответа
 
 ## Структура проекта
 
@@ -29,6 +30,8 @@
 restful_booker_API_project/
 ├── functions/
 │   └── api_helper.py          # Вспомогательные функции для работы с API
+├── models/
+│   └── booking.py             # Pydantic модели для валидации данных
 ├── schemas/
 │   ├── get_all_booking.json   # JSON схема для списка бронирований
 │   ├── get_one_booking.json   # JSON схема для одного бронирования
@@ -120,7 +123,9 @@ isort --profile black --multi-line 3 functions/ tests/ utils/
 - Allure отчет с прикреплением тел запросов/ответов
 
 ### Валидация схем
-Все ответы API валидируются с помощью JSON схем, расположенных в папке `schemas/`
+Все ответы API валидируются с помощью:
+- JSON схем, расположенных в папке `schemas/`
+- Pydantic моделей для типобезопасности и валидации данных
 
 
 ### Известные баги
